@@ -35,7 +35,7 @@ async fn sub_tasks(count: Arc<AtomicI64>, finish: Arc<Mutex<i64>>) {
     let task_span = time::Duration::from_millis(TASK_SPAN as u64);
     for _ in 0..TASK_COUNT {
         tokio::time::sleep(task_span).await;
-        count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        count.fetch_add(1, Ordering::Relaxed);
     }
     *finish.lock().unwrap() -= 1;
 }
@@ -45,7 +45,7 @@ async fn print_result(count: Arc<AtomicI64>, finish: Arc<Mutex<i64>>) {
     let start_time = time::Instant::now();
     loop {
         tokio::time::sleep(time::Duration::from_secs(1)).await;
-        let current_count = count.load(std::sync::atomic::Ordering::Relaxed);
+        let current_count = count.load(Ordering::Relaxed);
         let span = time::Instant::now().duration_since(start_time);
         let change = current_count - last_count;
         println!("{change} tasks per second at {span:?}");
